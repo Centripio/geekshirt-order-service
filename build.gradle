@@ -24,6 +24,7 @@ dependencies {
 	compile "io.springfox:springfox-swagger2:2.9.2"
 	compile "io.springfox:springfox-swagger-ui:2.9.2"
 	compile "io.springfox:springfox-bean-validators:2.9.2"
+	compile 'org.modelmapper:modelmapper:2.3.2'
 	compileOnly 'org.projectlombok:lombok'
 	runtimeOnly 'com.h2database:h2'
 	annotationProcessor 'org.projectlombok:lombok'
