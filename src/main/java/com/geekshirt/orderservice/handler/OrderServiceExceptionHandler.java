@@ -23,7 +23,7 @@ public class OrderServiceExceptionHandler extends ResponseEntityExceptionHandler
     }
 
     @ExceptionHandler(IncorrectOrderRequestException.class)
-    public ResponseEntity<Object> handleResourceNotFound(IncorrectOrderRequestException exception, WebRequest request) {
+    public ResponseEntity<Object> handleIncorrectRequest(IncorrectOrderRequestException exception, WebRequest request) {
         OrderServiceExceptionResponse response = new OrderServiceExceptionResponse(exception.getMessage(), request.getDescription(false), HttpStatus.BAD_REQUEST, LocalDateTime.now());
         return new ResponseEntity<>(response, response.getStatus());
     }
