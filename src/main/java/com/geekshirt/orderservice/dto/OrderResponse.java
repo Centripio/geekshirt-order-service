@@ -4,6 +4,7 @@ import lombok.Getter;
 import lombok.Setter;
 
 import java.util.Date;
+import java.util.List;
 
 @Getter
 @Setter
@@ -14,4 +15,6 @@ public class OrderResponse {
     private Double totalAmount;
     private Double totalTax;
     private Date transactionDate;
+
+    List<OrderDetailResponse> details;
 }
