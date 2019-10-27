@@ -15,8 +15,10 @@ import com.geekshirt.orderservice.util.OrderValidator;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Isolation;
+import org.springframework.transaction.annotation.Propagation;
+import org.springframework.transaction.annotation.Transactional;
 
-import javax.transaction.Transactional;
 import java.util.Date;
 import java.util.List;
 import java.util.UUID;
@@ -32,7 +34,7 @@ public class OrderService {
     @Autowired
     private JpaOrderDAO orderDAO;
 
-    @Transactional
+    @Transactional(isolation = Isolation.READ_COMMITTED, propagation = Propagation.REQUIRED)
     public Order createOrder(OrderRequest orderRequest) {
         OrderValidator.validateOrder(orderRequest);
 
