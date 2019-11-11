@@ -1,13 +1,14 @@
 package com.geekshirt.orderservice.service;
 
 import com.geekshirt.orderservice.client.CustomerServiceClient;
-import com.geekshirt.orderservice.dao.JpaOrderDAO;
+import com.geekshirt.orderservice.client.InventoryServiceClient;
 import com.geekshirt.orderservice.dto.*;
 import com.geekshirt.orderservice.entities.Order;
 import com.geekshirt.orderservice.entities.OrderDetail;
 import com.geekshirt.orderservice.exception.AccountNotFoundException;
 import com.geekshirt.orderservice.exception.OrderNotFoundException;
 import com.geekshirt.orderservice.exception.PaymentNotAcceptedException;
+import com.geekshirt.orderservice.producer.ShippingOrderProducer;
 import com.geekshirt.orderservice.repositories.OrderRepository;
 import com.geekshirt.orderservice.util.*;
 import lombok.extern.slf4j.Slf4j;
@@ -36,6 +37,15 @@ public class OrderService {
     @Autowired
     private PaymentProcessorService paymentService;
 
+    @Autowired
+    private InventoryServiceClient inventoryClient;
+
+    @Autowired
+    private ShippingOrderProducer shipmentMessageProducer;
+
+    @Autowired
+    private OrderMailService mailService;
+
     @Transactional(isolation = Isolation.READ_COMMITTED, propagation = Propagation.REQUIRED)
     public Order createOrder(OrderRequest orderRequest) throws PaymentNotAcceptedException {
         OrderValidator.validateOrder(orderRequest);
@@ -57,6 +67,11 @@ public class OrderService {
             throw new PaymentNotAcceptedException("The Payment added to your account was not accepted, please verify.");
         }
 
+        log.info("Updating Inventory: {}", orderRequest.getItems());
+        inventoryClient.updateInventory(orderRequest.getItems());
+
+        log.info("Sending Request to Shipping Service.");
+        shipmentMessageProducer.send(newOrder.getOrderId(), account);
         return orderRepository.save(newOrder);
     }
 
@@ -102,5 +117,20 @@ public class OrderService {
     public List<Order> findOrdersByAccountId(String accountId) {
         Optional<List<Order>> orders = Optional.ofNullable(orderRepository.findOrdersByAccountId(accountId));
         return orders.orElseThrow(() -> new OrderNotFoundException("Orders were not found"));
+    }
+
+    public void updateShipmentOrder(ShipmentOrderResponse response) {
+        try {
+            Order order = findOrderById(response.getOrderId());
+            order.setStatus(OrderStatus.valueOf(response.getShippingStatus()));
+            orderRepository.save(order);
+            mailService.sendEmail(order, response);
+        }
+        catch(OrderNotFoundException orderNotFound) {
+            log.info("The Following Order was not found: {} with tracking Id: {}", response.getOrderId(), response.getTrackingId());
+        }
+        catch(Exception e) {
+            log.info("An error occurred sending email: " + e.getMessage());
+        }
     }
 }
