@@ -13,6 +13,7 @@ import com.geekshirt.orderservice.repositories.OrderRepository;
 import com.geekshirt.orderservice.util.*;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Isolation;
 import org.springframework.transaction.annotation.Propagation;
@@ -100,6 +101,7 @@ public class OrderService {
         return orderObj;
     }
 
+    @Cacheable(value = "orders")
     public List<Order> findAllOrders() {
         return orderRepository.findAll();
     }
@@ -114,6 +116,7 @@ public class OrderService {
                 .orElseThrow(() -> new OrderNotFoundException("Order not found"));
     }
 
+    @Cacheable(value = "ordersAccount", key = "#accountId")
     public List<Order> findOrdersByAccountId(String accountId) {
         Optional<List<Order>> orders = Optional.ofNullable(orderRepository.findOrdersByAccountId(accountId));
         return orders.orElseThrow(() -> new OrderNotFoundException("Orders were not found"));
