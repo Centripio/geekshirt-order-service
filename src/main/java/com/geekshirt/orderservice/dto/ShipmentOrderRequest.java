@@ -20,6 +20,6 @@ public class ShipmentOrderRequest implements Serializable {
     @JsonProperty("receiptEmail")
     private String receiptEmail;
 
-    @JsonProperty("shippingAddress")
+    @JsonProperty("shipmentAddress")
     private AddressDto shippingAddress;
 }
