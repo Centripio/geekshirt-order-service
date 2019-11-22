@@ -1,4 +1,4 @@
-package com.geekshirt.orderservice;
+package com.geekshirt.orderservice.repository;
 
 import com.geekshirt.orderservice.entities.Order;
 import com.geekshirt.orderservice.repositories.OrderRepository;
