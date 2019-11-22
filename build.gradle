@@ -25,7 +25,7 @@ dependencies {
 	compile "io.springfox:springfox-swagger-ui:2.9.2"
 	compile "io.springfox:springfox-bean-validators:2.9.2"
 	compile 'org.modelmapper:modelmapper:2.3.2'
-	compileOnly 'org.projectlombok:lombok'
+	compileOnly 'org.projectlombok:lombok'q
 	compile 'org.springframework.boot:spring-boot-starter-amqp:2.1.6.RELEASE'
 	compile 'org.springframework.boot:spring-boot-starter-mail'
 	compile 'org.springframework.boot:spring-boot-starter-freemarker'
@@ -36,7 +36,16 @@ dependencies {
 	compile 'org.springframework.boot:spring-boot-starter-data-redis:2.1.6.RELEASE'
 	compile("mysql:mysql-connector-java")
 
+	testImplementation 'org.junit.jupiter:junit-jupiter-api:5.3.1'
+	testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine:5.3.1'
+
 	runtimeOnly 'com.h2database:h2'
 	annotationProcessor 'org.projectlombok:lombok'
-	testImplementation 'org.springframework.boot:spring-boot-starter-test'
+	testImplementation ('org.springframework.boot:spring-boot-starter-test') {
+		exclude group: 'junit', module: 'junit'
+	}
+}
+
+tasks.test {
+	useJUnitPlatform()
 }

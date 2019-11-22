@@ -14,6 +14,7 @@ public class OrderResponse {
     private String accountId;
     private Double totalAmount;
     private Double totalTax;
+    private Double totalAmountTax;
     private Date transactionDate;
 
     List<OrderDetailResponse> details;
