@@ -34,7 +34,6 @@ public class OrderServiceDataTestUtils {
 
     public static AccountDto getMockAccount(String accountId) {
         return AccountDto.builder()
-                //.id(Long.valueOf(accountId))
                 .address(getMockAddress())
                 .creditCard(getMockCreditCard())
                 .customer(getMockCustomerInfo())
@@ -72,3 +71,4 @@ public class OrderServiceDataTestUtils {
                 .build();
     }
 }
+

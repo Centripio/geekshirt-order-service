@@ -1,14 +1,13 @@
 package com.geekshirt.orderservice.service;
 
-
 import com.geekshirt.orderservice.client.CustomerServiceClient;
 import com.geekshirt.orderservice.client.InventoryServiceClient;
 import com.geekshirt.orderservice.dto.AccountDto;
 import com.geekshirt.orderservice.dto.OrderRequest;
+
 import com.geekshirt.orderservice.entities.Order;
 import com.geekshirt.orderservice.exception.AccountNotFoundException;
 import com.geekshirt.orderservice.exception.IncorrectOrderRequestException;
-import com.geekshirt.orderservice.exception.OrderNotFoundException;
 import com.geekshirt.orderservice.exception.PaymentNotAcceptedException;
 import com.geekshirt.orderservice.producer.ShippingOrderProducer;
 import com.geekshirt.orderservice.repositories.OrderRepository;
@@ -30,7 +29,6 @@ import java.util.ArrayList;
 import java.util.Optional;
 
 import static org.mockito.ArgumentMatchers.*;
-import static org.mockito.Mockito.times;
 
 @ExtendWith(SpringExtension.class)
 public class OrderServiceTest {
@@ -69,10 +67,10 @@ public class OrderServiceTest {
         OrderRequest orderRequest = new OrderRequest();
         orderRequest.setAccountId("12345678");
 
-        IncorrectOrderRequestException incorrectExceptions = Assertions.assertThrows(IncorrectOrderRequestException.class,
+        IncorrectOrderRequestException incorrectException = Assertions.assertThrows(IncorrectOrderRequestException.class,
                 () -> orderService.createOrder(orderRequest));
 
-        Assertions.assertEquals(ExceptionMessagesEnum.INCORRECT_REQUEST_EMPTY_ITEMS_ORDER.getValue(), incorrectExceptions.getMessage());
+        Assertions.assertEquals(ExceptionMessagesEnum.INCORRECT_REQUEST_EMPTY_ITEMS_ORDER.getValue(), incorrectException.getMessage());
     }
 
     @DisplayName("Should Throw Incorrect Exception When Order Items are Empty")
@@ -82,10 +80,10 @@ public class OrderServiceTest {
         orderRequest.setAccountId("12345678");
         orderRequest.setItems(new ArrayList<>());
 
-        IncorrectOrderRequestException incorrectExceptions = Assertions.assertThrows(IncorrectOrderRequestException.class,
+        IncorrectOrderRequestException incorrectException = Assertions.assertThrows(IncorrectOrderRequestException.class,
                 () -> orderService.createOrder(orderRequest));
 
-        Assertions.assertEquals(ExceptionMessagesEnum.INCORRECT_REQUEST_EMPTY_ITEMS_ORDER.getValue(), incorrectExceptions.getMessage());
+        Assertions.assertEquals(ExceptionMessagesEnum.INCORRECT_REQUEST_EMPTY_ITEMS_ORDER.getValue(), incorrectException.getMessage());
     }
 
     @DisplayName("Should Throw Account Not Found Exception When Account Does Not Exists")
@@ -148,7 +146,8 @@ public class OrderServiceTest {
         Assertions.assertEquals(OrderPaymentStatus.APPROVED, order.getPaymentStatus());
         Assertions.assertNotNull(order.getTransactionDate());
 
-     /* assertThat(order.getOrderId(), not(isEmptyString()));
+        /*
+        assertThat(order.getOrderId(), not(isEmptyString()));
         assertThat(order.getAccountId(), is(Matchers.equalTo("12345678")));
         assertThat(order.getTotalAmount(), is(Matchers.equalTo(1005d)));
         assertThat(order.getTotalTax(), is(Matchers.equalTo(160.8d)));
@@ -156,7 +155,8 @@ public class OrderServiceTest {
         assertThat(order.getStatus(), is(Matchers.equalTo(OrderStatus.PENDING)));
         assertThat(order.getDetails().size(), is(Matchers.equalTo(2)));
         assertThat(order.getPaymentStatus(), is(Matchers.equalTo(OrderPaymentStatus.APPROVED)));
-        assertThat(order.getTransactionDate(), is(Matchers.notNullValue()));*/
+        assertThat(order.getTransactionDate(), is(Matchers.notNullValue()));
+        */
 
         Mockito.verify(customerClient).findAccount(anyString());
         Mockito.verify(paymentService).processPayment(any(), any());
@@ -164,5 +164,4 @@ public class OrderServiceTest {
         Mockito.verify(shipmentMessageProducer).send(anyString(), any());
         Mockito.verify(orderRepository).save(any(Order.class));
     }
-
 }
